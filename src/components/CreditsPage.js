@@ -81,6 +81,15 @@ export default function CreditsPage(props) {
   // Genius required info
   const genius_client_access_token = `${process.env.REACT_APP_GENIUS_ACCESS_TOKEN}`;
 
+  // FRONTEND CHANGE: Adding the AWS API here
+  const aws_api_url = `${process.env.REACT_APP_AWS_API}` + new URLSearchParams({
+    spotify_auth_code: spotify_auth_code,
+    spotify_redirect_uri: spotify_redirect_uri,
+    spotify_id: spotify_id,
+    spotify_secret: spotify_secret,
+    genius_client_access_token: genius_client_access_token
+  });
+
   // Defining useState hooks
   const [creditsMessage, setCreditsMessage] = useState({full_title: '', album_image:'', featured_artists_names: [], writers_names: [], producers_names: [], custom_performances: []});
 
@@ -88,33 +97,8 @@ export default function CreditsPage(props) {
   useEffect(() => {
 
     // Now we have the code, proceed to get the access token
-    console.log('Spotify code is not empty! Code is: ', spotify_auth_code);
-    spotify_api_token_caller(spotify_auth_code, spotify_redirect_uri, spotify_id, spotify_secret)
-    .then(res_token => {
-      console.log('Token Received!: ', res_token.data.access_token);
-      return spotify_api_data_caller(res_token.data.access_token);
-    })
-
-    .then(res_data => {
-      console.log('Spotify Data Received!: ', res_data);
-      // Now the spotify data is received, get the genius search results!
-      const spotify_song_name = res_data.item.name;
-      const spotify_song_name_cleaned = spotify_song_name.replace(/ *\([^)]*\) */g, "");
-      const spotify_song_artist = res_data.item.artists[0].name;
-      const genius_api_url = "https://api.genius.com/search?" + new URLSearchParams({
-        q: spotify_song_name_cleaned + ' ' + spotify_song_artist
-      });
-      return genius_api_caller(genius_api_url, genius_client_access_token)
-    })
-
-    .then(res_genius_search => {
-      console.log('Genius Search Results Received!: ', res_genius_search);
-      // Get the first song result from the search
-      const genius_api_path = res_genius_search.data.response.hits[0].result.api_path;
-      const genius_api_for_song = "https://api.genius.com" + genius_api_path;
-      return genius_api_caller(genius_api_for_song, genius_client_access_token);
-    })
-
+    // FRONTEND CHANGE: add the AWS API to access the back-end, which should give us the song data
+    axios.get(aws_api_url)
     .then(res_genius_song_data => {
       console.log('Genius Song Data Received!: ', res_genius_song_data);
 
