@@ -46,19 +46,16 @@ async function spotify_api_data_caller(access_token_input) {
 
 // Function 3: Gets anything from the genius web api
 async function genius_api_caller(url,token) {
-
-  const requestOptions = {
-    method: 'GET',
+  const headers = {
     headers: {
-      'Authorization': 'Bearer ' + token,
-      'User-Agent': 'CompuServe Classic/1.22',
-      'Accept': 'application/json',
-      'Host': 'api.genius.com'
+      "Authorization": "Bearer " + token,
+      "User-Agent": "CompuServe Classic/1.22",
+      "Accept": "application/json",
+      "Host": "api.genius.com"
     }
-  };
-
-  const response = await fetch(url, requestOptions);
-  return response.json();
+  }
+  const response = await axios.get(url, headers);
+  return response;
 }
 
 
@@ -88,9 +85,6 @@ export default function CreditsPage(props) {
   const [creditsMessage, setCreditsMessage] = useState({full_title: '', album_image:'', featured_artists_names: [], writers_names: [], producers_names: [], custom_performances: []});
 
   // Once received the code after redirect, we must save the code to get the token
-  // NOTE: useEffect hook, with the unnamed dependencies below ("[]"), allows us to only run this code once in the
-  //       first render of this function. Without it, the whole function will run re-render infinitely because of 
-  //       "setSpotifyCode", causing a re-render. Without "[]", useEffect runs whenever any useState hook changes.
   useEffect(() => {
 
     // Now we have the code, proceed to get the access token
@@ -116,7 +110,7 @@ export default function CreditsPage(props) {
     .then(res_genius_search => {
       console.log('Genius Search Results Received!: ', res_genius_search);
       // Get the first song result from the search
-      const genius_api_path = res_genius_search.response.hits[0].result.api_path;
+      const genius_api_path = res_genius_search.data.response.hits[0].result.api_path;
       const genius_api_for_song = "https://api.genius.com" + genius_api_path;
       return genius_api_caller(genius_api_for_song, genius_client_access_token);
     })
@@ -125,16 +119,16 @@ export default function CreditsPage(props) {
       console.log('Genius Song Data Received!: ', res_genius_song_data);
 
       // CHANGING CREDITS MESSAGE
-      setCreditsMessage({full_title: res_genius_song_data.response.song.full_title, 
-        album_image: res_genius_song_data.response.song.song_art_image_url,
-        featured_artists_names: res_genius_song_data.response.song.featured_artists, 
-        writers_names: res_genius_song_data.response.song.writer_artists, 
-        producers_names: res_genius_song_data.response.song.producer_artists,
-        custom_performances: res_genius_song_data.response.song.custom_performances});
+      setCreditsMessage({full_title: res_genius_song_data.data.response.song.full_title, 
+        album_image: res_genius_song_data.data.response.song.song_art_image_url,
+        featured_artists_names: res_genius_song_data.data.response.song.featured_artists, 
+        writers_names: res_genius_song_data.data.response.song.writer_artists, 
+        producers_names: res_genius_song_data.data.response.song.producer_artists,
+        custom_performances: res_genius_song_data.data.response.song.custom_performances});
 
     })
-    .catch(err_spotify => {
-      console.log('Oh no, an error occured!: ', err_spotify)
+    .catch(err => {
+      console.log('Oh no, an error occured!: ', err)
     });
   }, []);
 
