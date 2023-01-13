@@ -10,55 +10,8 @@ import Image from 'react-bootstrap/Image'
 import Helmet from 'react-helmet';
 
 import axios from 'axios';
-import SpotifyWebApi from "spotify-web-api-js";
-
-const spotifyApiFunction = new SpotifyWebApi();
 
 // ----- Side Functions -----
-// Function 1: Gets an access token from the spotify web api
-async function spotify_api_token_caller(code_input, redirect_uri_input, id_input, secret_input) {
-
-  const headers = {
-    headers: {
-      "Authorization": "Basic " + window.btoa(id_input + ":" + secret_input),
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
-  };
-  
-  const data = new URLSearchParams({
-    grant_type: "authorization_code",
-    code: code_input,
-    redirect_uri: redirect_uri_input
-  });
-
-  const response = axios.post("https://accounts.spotify.com/api/token", data, headers);
-  return response;
-}
-
-// Function 2: Gets any data from spotify using an access token (specific case: get current song user is playing)
-async function spotify_api_data_caller(access_token_input) {
-
-  spotifyApiFunction.setAccessToken(access_token_input);
-  const response = spotifyApiFunction.getMyCurrentPlayingTrack();
-  return response;
-
-}
-
-// Function 3: Gets anything from the genius web api
-async function genius_api_caller(url,token) {
-  const headers = {
-    headers: {
-      "Authorization": "Bearer " + token,
-      "User-Agent": "CompuServe Classic/1.22",
-      "Accept": "application/json",
-      "Host": "api.genius.com"
-    }
-  }
-  const response = await axios.get(url, headers);
-  return response;
-}
-
-
 // Function 4: Converts the custom_performances object to a string of comma seperated values (ex: "bob, sarah, steve")
 function comma_string_maker(customPerformances_ArtistList) {
   const newList = customPerformances_ArtistList.map((item) => (
@@ -82,23 +35,26 @@ export default function CreditsPage(props) {
   const genius_client_access_token = `${process.env.REACT_APP_GENIUS_ACCESS_TOKEN}`;
 
   // FRONTEND CHANGE: Adding the AWS API here
-  const aws_api_url = `${process.env.REACT_APP_AWS_API}` + new URLSearchParams({
+  const aws_api_endpoint = `${process.env.REACT_APP_AWS_API}` + new URLSearchParams({
     spotify_auth_code: spotify_auth_code,
     spotify_redirect_uri: spotify_redirect_uri,
     spotify_id: spotify_id,
     spotify_secret: spotify_secret,
     genius_client_access_token: genius_client_access_token
   });
+  // debugging: to put in Postman
+  // console.log(aws_api_endpoint);
 
   // Defining useState hooks
   const [creditsMessage, setCreditsMessage] = useState({full_title: '', album_image:'', featured_artists_names: [], writers_names: [], producers_names: [], custom_performances: []});
 
   // Once received the code after redirect, we must save the code to get the token
+  
   useEffect(() => {
 
     // Now we have the code, proceed to get the access token
     // FRONTEND CHANGE: add the AWS API to access the back-end, which should give us the song data
-    axios.get(aws_api_url)
+    axios.get(aws_api_endpoint)
     .then(res_genius_song_data => {
       console.log('Genius Song Data Received!: ', res_genius_song_data);
 
@@ -115,6 +71,7 @@ export default function CreditsPage(props) {
       console.log('Oh no, an error occured!: ', err)
     });
   }, []);
+  
 
   return (
     <div>
