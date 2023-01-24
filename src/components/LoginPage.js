@@ -1,4 +1,4 @@
-// NOTE: better do import individually rather than {Container, Row, Col}
+// NOTE: better to import individually rather than {Container, Row, Col}
 
 import React from 'react'
 import Container from 'react-bootstrap/Container'
@@ -11,7 +11,7 @@ import Helmet from 'react-helmet';
 export default function LoginPage(props) {
   const spotify_authorize_base = 'https://accounts.spotify.com/authorize?';
   const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
-  const spotify_redirect_uri = 'http://localhost:3000/callback';
+  const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
 
   // Link to Spotify authorization page. Sent when Login button is pressed.
   const spotify_authorize_url_full = spotify_authorize_base + new URLSearchParams({
