@@ -28,7 +28,7 @@ export default function CreditsPage(props) {
   // Spotify required info
   const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
   const spotify_secret = `${process.env.REACT_APP_SPOTIFY_CLIENT_SECRET}`;
-  const spotify_redirect_uri = 'http://localhost:3000/callback';
+  const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
   const spotify_auth_code = props.spotify_auth_code;
 
   // Genius required info
