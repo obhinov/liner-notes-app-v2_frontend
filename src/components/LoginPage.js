@@ -5,22 +5,23 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button';
-
 import Helmet from 'react-helmet';
 
-export default function LoginPage(props) {
-  const spotify_authorize_base = 'https://accounts.spotify.com/authorize?';
-  const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
-  const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
+// Spotify credentials info
+const spotify_authorize_base = 'https://accounts.spotify.com/authorize?';
+const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
+const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
 
-  // Link to Spotify authorization page. Sent when Login button is pressed.
-  const spotify_authorize_url_full = spotify_authorize_base + new URLSearchParams({
-    client_id: spotify_id,
-    response_type: 'code',
-    redirect_uri: spotify_redirect_uri,
-    scope: 'user-read-currently-playing',
-    show_dialog: 'true'
-  });
+// Link to Spotify authorization page. Sent when Login button is pressed.
+const spotify_authorize_url_full = spotify_authorize_base + new URLSearchParams({
+  client_id: spotify_id,
+  response_type: 'code',
+  redirect_uri: spotify_redirect_uri,
+  scope: 'user-read-currently-playing',
+  show_dialog: 'true'
+});
+
+export default function LoginPage(props) {
 
   return (
     <div>
@@ -29,11 +30,11 @@ export default function LoginPage(props) {
             <Row >
               <Col sm={3}>
               </Col>
-                <Col sm={9} className='roboto-mono-google-font'>
-                    <h1>The Liner Notes App</h1>
-                    <p>Find detailed credits of songs you're currently listening to on Spotify!</p>
-                    <Button variant='outline-success' href={spotify_authorize_url_full}>Login to Spotify</Button>
-                </Col>
+              <Col sm={9} className='roboto-mono-google-font'>
+                  <h1>The Liner Notes App</h1>
+                  <p>Find detailed credits of songs you're currently listening to on Spotify!</p>
+                  <Button variant='outline-success' href={spotify_authorize_url_full}>Login to Spotify</Button>
+              </Col>
             </Row>
         </Container>
       </main>
@@ -42,9 +43,9 @@ export default function LoginPage(props) {
           <Row >
               <Col sm={3}>
               </Col>
-                <Col sm={9} className='roboto-mono-google-font'>
-                  <p>By Abhinav Subramani, 2022. Made using ReactJS and Bootstrap.</p>
-                </Col>
+              <Col sm={9} className='roboto-mono-google-font'>
+                <p>By Abhinav Subramani, 2022. Made using ReactJS and Bootstrap.</p>
+              </Col>
             </Row>
         </Container>
       </footer>
