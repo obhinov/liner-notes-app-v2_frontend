@@ -13,17 +13,6 @@ import axios from 'axios';
 
 import comma_string_maker from './helper_functions/comma_string_maker'
 
-// // ----- Side Functions -----
-// // Function 4: Converts the custom_performances object to a string of comma seperated values (ex: "bob, sarah, steve")
-// function comma_string_maker(customPerformances_ArtistList) {
-//   const newList = customPerformances_ArtistList.map((item) => (
-//     item.name
-//   ));
-//   const comma_string = newList.join(', ');
-//   return comma_string;
-// }
-
-
 // ----- Main Function -----
 export default function CreditsPage(props) {
 
