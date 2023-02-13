@@ -1,29 +1,28 @@
 // ----- Imports -----
 import React from 'react';
 import {useEffect, useState} from "react";
-
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Image from 'react-bootstrap/Image'
-
 import Helmet from 'react-helmet';
-
 import axios from 'axios';
 
 import comma_string_maker from './helper_functions/comma_string_maker'
+import ListingNamesComponent from './helper_functions/ListingNamesComponent'
+
+// Spotify required info
+const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
+const spotify_secret = `${process.env.REACT_APP_SPOTIFY_CLIENT_SECRET}`;
+const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
+
+// Genius required info
+const genius_client_access_token = `${process.env.REACT_APP_GENIUS_ACCESS_TOKEN}`;
 
 // ----- Main Function -----
 export default function CreditsPage(props) {
 
-  // Spotify required info
-  const spotify_id = `${process.env.REACT_APP_SPOTIFY_CLIENT_ID}`;
-  const spotify_secret = `${process.env.REACT_APP_SPOTIFY_CLIENT_SECRET}`;
-  const spotify_redirect_uri = `${process.env.REACT_APP_REDIRECT_URI}`;
   const spotify_auth_code = props.spotify_auth_code;
-
-  // Genius required info
-  const genius_client_access_token = `${process.env.REACT_APP_GENIUS_ACCESS_TOKEN}`;
 
   // FRONTEND CHANGE: Adding the AWS API here
   const aws_api_endpoint = `${process.env.REACT_APP_AWS_API}` + new URLSearchParams({
@@ -33,16 +32,11 @@ export default function CreditsPage(props) {
     spotify_secret: spotify_secret,
     genius_client_access_token: genius_client_access_token
   });
-  // debugging: to put in Postman
-  // console.log(aws_api_endpoint);
 
   // Defining useState hooks
   const [creditsMessage, setCreditsMessage] = useState({full_title: '', album_image:'', featured_artists_names: [], writers_names: [], producers_names: [], custom_performances: []});
-
-  // Once received the code after redirect, we must save the code to get the token
   
   useEffect(() => {
-
     // Now we have the code, proceed to get the access token
     // FRONTEND CHANGE: add the AWS API to access the back-end, which should give us the song data
     axios.get(aws_api_endpoint)
@@ -79,33 +73,10 @@ export default function CreditsPage(props) {
           <Col sm={7}>
             {creditsMessage && 
               <div class="ms-4">
-                {creditsMessage.featured_artists_names.length!=0 && <div>
-                  <h4>Feature Artists</h4>
-                  <ul>
-                    {creditsMessage.featured_artists_names.map(artist => (
-                      <li key={artist.id}>{artist.name}</li>
-                    ))}
-                  </ul>
-                </div>}
-
-                {creditsMessage.writers_names.length!=0 && <div>
-                  <h4>Writers</h4>
-                  <ul>
-                    {creditsMessage.writers_names.map(artist => (
-                      <li key={artist.id}>{artist.name}</li>
-                    ))}
-                  </ul>
-                </div>}
-
-                {creditsMessage.producers_names.length!=0 && <div>
-                  <h4>Producers</h4>
-                  <ul>
-                    {creditsMessage.producers_names.map(artist => (
-                      <li key={artist.id}>{artist.name}</li>
-                    ))}
-                  </ul>
-                </div>}
-
+                {creditsMessage.featured_artists_names.length!=0 && <ListingNamesComponent title='Feature Artists' credits_list={creditsMessage.featured_artists_names} />}
+                {creditsMessage.writers_names.length!=0 && <ListingNamesComponent title='Writers' credits_list={creditsMessage.writers_names} />}
+                {creditsMessage.producers_names.length!=0 && <ListingNamesComponent title='Producers' credits_list={creditsMessage.producers_names} />}
+                
                 {creditsMessage.custom_performances.length!=0 && <div>
                   <h4>Custom Performances</h4>
                   <ul>
@@ -114,6 +85,7 @@ export default function CreditsPage(props) {
                     ))}
                   </ul>
                 </div>}
+
               </div>
             }
           </Col>
