@@ -37,24 +37,24 @@ export default function CreditsPage(props) {
   const [creditsMessage, setCreditsMessage] = useState({full_title: '', album_image:'', featured_artists_names: [], writers_names: [], producers_names: [], custom_performances: []});
   
   useEffect(() => {
-    // Now we have the code, proceed to get the access token
-    // FRONTEND CHANGE: add the AWS API to access the back-end, which should give us the song data
-    axios.get(aws_api_endpoint)
-    .then(res_genius_song_data => {
+
+    // Hit AWS api to get genius song data
+    const fetchApiData = async () => {
+      const res_genius_song_data = await axios.get(aws_api_endpoint);
       console.log('Genius Song Data Received!: ', res_genius_song_data);
 
-      // CHANGING CREDITS MESSAGE
       setCreditsMessage({full_title: res_genius_song_data.data.response.song.full_title, 
         album_image: res_genius_song_data.data.response.song.song_art_image_url,
         featured_artists_names: res_genius_song_data.data.response.song.featured_artists, 
         writers_names: res_genius_song_data.data.response.song.writer_artists, 
         producers_names: res_genius_song_data.data.response.song.producer_artists,
         custom_performances: res_genius_song_data.data.response.song.custom_performances});
+    }
 
-    })
-    .catch(err => {
-      console.log('Oh no, an error occured!: ', err)
-    });
+    // calling the fetchApiData function
+    fetchApiData()
+    .catch((err) => console.log('Oops, an error occured!', err));
+
   }, []);
   
 
@@ -76,7 +76,6 @@ export default function CreditsPage(props) {
                 {creditsMessage.featured_artists_names.length!=0 && <ListingNamesComponent title='Feature Artists' credits_list={creditsMessage.featured_artists_names} />}
                 {creditsMessage.writers_names.length!=0 && <ListingNamesComponent title='Writers' credits_list={creditsMessage.writers_names} />}
                 {creditsMessage.producers_names.length!=0 && <ListingNamesComponent title='Producers' credits_list={creditsMessage.producers_names} />}
-                
                 {creditsMessage.custom_performances.length!=0 && <div>
                   <h4>Custom Performances</h4>
                   <ul>
